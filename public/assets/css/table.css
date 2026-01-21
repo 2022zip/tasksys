@@ -1,0 +1,73 @@
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 1000px; /* Ensure horizontal scroll on small screens */
+}
+
+.task-table thead th {
+    background-color: #6366f1; /* Indigo-like color from screenshot */
+    color: #fff;
+    font-weight: 500;
+    text-align: left;
+    padding: 12px 10px;
+    white-space: nowrap;
+}
+
+.task-table tbody td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.task-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.task-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Compact specific column styles */
+.task-table .status-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.status-progress { background: #e0f2fe; color: #0284c7; }
+.status-completed { background: #dcfce7; color: #16a34a; }
+.status-paused { background: #fef9c3; color: #ca8a04; }
+
+.table-tag {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #4b5563;
+    margin-right: 4px;
+    display: inline-block;
+    margin-bottom: 2px;
+}
+
+.btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
+.btn-grid .action-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    justify-content: center;
+}

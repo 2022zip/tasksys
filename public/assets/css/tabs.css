@@ -1,0 +1,32 @@
+/* Tabs */
+.tabs-container {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff; /* Optional: if you want tabs to have bg */
+    border-radius: 8px 8px 0 0; /* Optional */
+    padding: 0 16px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #4b5563;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: #1f2937;
+}
+
+.tab-btn.active {
+    color: #059669; /* Greenish color like the screenshot */
+    border-bottom-color: #059669;
+    font-weight: 600;
+}
