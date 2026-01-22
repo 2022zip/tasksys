@@ -1,13 +1,331 @@
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0; url=./pages/" />
-    <link rel="canonical" href="./pages/" />
-    <title>tasksys</title>
-  </head>
-  <body>
-    Redirecting to pages...
-    <script>location.replace("./pages/");</script>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026年总部办公室任务追踪表</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/tabs.css">
+    <link rel="stylesheet" href="assets/css/table.css">
+    <link rel="stylesheet" href="assets/css/assistant.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>2026年总部办公室任务追踪表</h1>
+                <p class="subtitle">高效追踪和管理所有工作任务</p>
+            </div>
+            <button class="btn btn-primary" id="addTaskBtn">
+                <i class="fas fa-plus"></i> 添加任务
+            </button>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="headquarters">26年总部办工作</button>
+            <button class="tab-btn" data-tab="assistant">26年特助追踪任务</button>
+            <button class="tab-btn" data-tab="archive2025">25年已经结案任务</button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div id="defaultStats" class="stats-row">
+            <div class="card stat-card">
+                <div class="icon-box"><i class="far fa-calendar-alt"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">总任务数</span>
+                    <span class="stat-value" id="totalTasks">0</span>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="icon-box icon-blue"><i class="far fa-circle"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">进行中</span>
+                    <span class="stat-value" id="inProgressTasks">0</span>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="icon-box icon-yellow"><i class="fas fa-times"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">暂停</span>
+                    <span class="stat-value" id="pausedTasks">0</span>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="icon-box icon-green"><i class="fas fa-check"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">已完成</span>
+                    <span class="stat-value" id="completedTasks">0</span>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="icon-box icon-red"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">紧急</span>
+                    <span class="stat-value" id="urgentTasks">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assistant Stats Container -->
+        <div id="assistantStats" class="assistant-stats-container" style="display: none;"></div>
+
+        <!-- Search and Filter -->
+        <div class="filter-row">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索任务内容、负责人或工作重点...">
+            </div>
+            <div class="filter-box">
+                <i class="fas fa-filter"></i>
+                <select id="statusFilter">
+                    <option value="all">全部状态</option>
+                    <option value="进行中">进行中</option>
+                    <option value="已完成">已完成</option>
+                    <option value="暂停">暂停</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Task List -->
+        <div class="table-responsive">
+            <table class="task-table">
+                <thead id="tableHead">
+                    <tr>
+                        <th width="50">序号</th>
+                        <th>工作内容</th>
+                        <th>工作重点</th>
+                        <th>标签</th>
+                        <th width="80">是否紧急</th>
+                        <th width="100">开始时间</th>
+                        <th width="100">计划完成</th>
+                        <th width="100">实际完成</th>
+                        <th width="80">状态</th>
+                        <th width="80">负责人</th>
+                        <th width="120">负责人回复</th>
+                        <th width="80">指挥官</th>
+                        <th width="80">特助</th>
+                        <th width="180">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="taskList">
+                    <!-- Tasks will be injected here by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">添加新任务</h2>
+                <button type="button" class="btn btn-delete-header" id="modalDeleteBtn" style="display: none;">删除</button>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addTaskForm">
+                <input type="hidden" name="id" id="taskId">
+                <div class="form-group">
+                    <label>任务名称</label>
+                    <input type="text" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label>工作重点</label>
+                    <textarea name="keyPoint"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>开始时间</label>
+                        <input type="date" name="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label>计划完成</label>
+                        <input type="date" name="plannedEndDate">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>负责人</label>
+                        <input type="text" name="responsible" required>
+                    </div>
+                    <div class="form-group">
+                        <label>负责人邮箱 (用于通知)</label>
+                        <input type="email" name="responsibleEmail" placeholder="email@example.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>负责特助</label>
+                        <select name="assistant">
+                            <option value="">选择特助...</option>
+                            <option value="承峯">承峯</option>
+                            <option value="林华">林华</option>
+                            <option value="俊杰">俊杰</option>
+                            <option value="陈祥">陈祥</option>
+                        </select>
+                    </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>类别</label>
+                        <div class="custom-select-container">
+                            <div class="select-trigger" id="categoryTrigger">选择类别...</div>
+                            <div class="select-options" id="categoryOptions">
+                                <label class="option-item"><input type="checkbox" value="专案"> 专案</label>
+                                <label class="option-item"><input type="checkbox" value="项目"> 项目</label>
+                                <label class="option-item"><input type="checkbox" value="问题"> 问题</label>
+                                <label class="option-item"><input type="checkbox" value="子项目"> 子项目</label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="categoryTags" id="categoryHiddenInput">
+                    </div>
+                    <div class="form-group">
+                        <label>大区</label>
+                        <div class="custom-select-container">
+                            <div class="select-trigger" id="regionTrigger">选择大区...</div>
+                            <div class="select-options" id="regionOptions">
+                                <label class="option-item"><input type="checkbox" value="非大陆区"> 非大陆区</label>
+                                <label class="option-item"><input type="checkbox" value="大陆区"> 大陆区</label>
+                                <label class="option-item"><input type="checkbox" value="投资区"> 投资区</label>
+                                <label class="option-item"><input type="checkbox" value="后职能体系"> 后职能体系</label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="regionTags" id="regionHiddenInput">
+                    </div>
+                </div>
+                </div>
+                <div class="form-group">
+                    <label>负责人回复</label>
+                    <textarea name="reply" placeholder="在此填写负责人回复内容..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div id="emailModal" class="modal" style="display: none;">
+        <div class="modal-content email-modal-content">
+            <div class="email-header-top">
+                <div class="email-actions-left">
+                    <button class="btn-email-send"><i class="fas fa-paper-plane"></i> Send</button>
+                    <button class="btn-email-action"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn-email-action"><i class="fas fa-paperclip"></i> Attachment</button>
+                </div>
+                <div class="email-user-info">
+                    zbbgs@digiwin.com
+                </div>
+            </div>
+            
+            <div class="email-form-area">
+                <div class="email-field-row">
+                    <label>To:</label>
+                    <input type="text" id="emailTo" class="email-input-line">
+                </div>
+                <div class="email-field-row">
+                    <label>Cc:</label>
+                    <input type="text" id="emailCc" class="email-input-line">
+                    <span class="email-bcc-link">Bcc</span>
+                </div>
+                <div class="email-field-row">
+                    <label>Subject:</label>
+                    <input type="text" id="emailSubject" class="email-input-line">
+                </div>
+                
+                <div class="email-editor-toolbar">
+                    <i class="fas fa-undo"></i>
+                    <i class="fas fa-redo"></i>
+                    <span class="separator">|</span>
+                    <i class="fas fa-paint-roller"></i>
+                    <i class="fas fa-eraser"></i>
+                    <span class="separator">|</span>
+                    <i class="fas fa-magic"></i> Smart Summary
+                    <span class="separator">|</span>
+                    <i class="fas fa-plus-circle"></i> Insert
+                    <span class="separator">|</span>
+                    <i class="fas fa-file-alt"></i>
+                    <i class="far fa-smile"></i>
+                    <span class="separator">|</span>
+                    <span>Default...</span>
+                    <span>11</span>
+                    <span class="separator">|</span>
+                    <i class="fas fa-bold"></i>
+                    <i class="fas fa-italic"></i>
+                    <span>More</span>
+                </div>
+                
+                <div id="emailContent" class="email-textarea" contenteditable="true"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Task Modal -->
+    <div id="pauseModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2>任务暂停原因</h2>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button type="button" class="btn" style="background-color: #f97316; color: white; padding: 6px 12px; font-size: 12px;" id="restartProjectBtn">重启项目</button>
+                    <button type="button" class="btn" style="background-color: #fce7f3; color: #be185d; padding: 6px 12px; font-size: 12px;" id="cancelPauseBtn">取消</button>
+                    <span class="close" id="closePauseModal">&times;</span>
+                </div>
+            </div>
+            <form id="pauseTaskForm">
+                <input type="hidden" name="id" id="pauseTaskId">
+                <div class="form-group">
+                    <textarea name="pauseReason" id="pauseReason" placeholder="请输入暂停原因..." style="height: 150px;" required></textarea>
+                </div>
+                <div class="form-actions" style="justify-content: flex-end;">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Reply Modal -->
+    <div id="replyModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>任务回复</h2>
+                <span class="close" id="closeReplyModal">&times;</span>
+            </div>
+            <form id="replyTaskForm">
+                <input type="hidden" name="id" id="replyTaskId">
+                <div class="form-group">
+                    <label>任务名称</label>
+                    <input type="text" name="title" id="replyTaskTitle" readonly>
+                </div>
+                <div class="form-group">
+                    <label>工作重点</label>
+                    <textarea name="keyPoint" id="replyTaskKeyPoint" readonly></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>开始时间</label>
+                        <input type="date" name="startDate" id="replyTaskStartDate" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>计划完成</label>
+                        <input type="date" name="plannedEndDate" id="replyTaskPlannedEndDate" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>任务阶段成果</label>
+                    <textarea name="stageResult" placeholder="请输入任务阶段成果..." required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
 </html>
