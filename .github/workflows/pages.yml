@@ -24,6 +24,6 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .   # 如果你的 index.html 在仓库根目录，就用 .
+          path: public
 
       - uses: actions/deploy-pages@v4
